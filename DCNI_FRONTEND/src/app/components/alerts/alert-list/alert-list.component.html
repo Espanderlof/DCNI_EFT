@@ -1,0 +1,156 @@
+<div class="container mt-4 mb-2">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bell-fill me-2"></i>
+                        Alertas Médicas
+                    </h5>
+                    @if (activeAlerts.length > 0) {
+                    <span class="badge bg-danger">{{ activeAlerts.length }} Alertas Activas</span>
+                    }
+                </div>
+
+                <!-- Mensaje de carga -->
+                @if (loading) {
+                <div class="card-body text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+                }
+
+                <!-- Mensaje de error -->
+                @if (error) {
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                </div>
+                }
+
+                <!-- Lista de alertas -->
+                @if (!loading && activeAlerts.length > 0) {
+                <div class="card-body">
+                    @for (alert of activeAlerts; track alert.id) {
+                    <div class="alert {{ getAlertClass(alert.alertType) }}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="alert-heading">
+                                    <i [class]="'bi me-2 ' + getTypeIcon(alert.alertType)"></i>
+                                    {{ getTypeLabel(alert.alertType) }}
+                                </h5>
+                                <p class="mb-0">
+                                    Paciente: {{ alert.patient.name }} -
+                                    Habitación {{ alert.patient.roomNumber }}
+                                </p>
+                                <small class="text-muted">
+                                    {{ getTimeDifference(alert.timestamp) }}
+                                </small>
+                            </div>
+                            <button class="btn {{ getAlertButtonClass(alert.alertType) }}" (click)="attendAlert(alert)">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Atender
+                            </button>
+                        </div>
+                    </div>
+                    }
+                </div>
+                } @else if (!loading && activeAlerts.length === 0) {
+                <div class="card-body">
+                    <div class="alert alert-info text-center">
+                        No hay alertas activas en este momento.
+                    </div>
+                </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Archivos de Resumen -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-text-fill me-2"></i>
+                        Resumen de Alertas
+                    </h5>
+                    @if (files.length > 0) {
+                    <span class="badge bg-info">{{ files.length }} Archivos</span>
+                    }
+                </div>
+
+                <!-- Mensaje de carga -->
+                @if (loadingFiles) {
+                <div class="card-body text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando archivos...</span>
+                    </div>
+                </div>
+                }
+
+                <!-- Mensaje de error -->
+                @if (fileError) {
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        {{ fileError }}
+                    </div>
+                </div>
+                }
+
+                <!-- Lista de archivos -->
+                @if (!loadingFiles && files.length > 0) {
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Tamaño</th>
+                                    <th>Última modificación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (file of files; track file.name) {
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-file-text me-2"></i>
+                                        {{ file.name }}
+                                    </td>
+                                    <td>{{ file.contentType }}</td>
+                                    <td>{{ formatFileSize(file.size) }}</td>
+                                    <td>{{ file.lastModified | date:'dd/MM/yyyy HH:mm' }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-primary me-1" (click)="downloadFile(file)"
+                                                title="Descargar archivo">
+                                                <i class="bi bi-download"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" (click)="deleteFile(file)"
+                                                title="Eliminar archivo">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                } @else if (!loadingFiles && files.length === 0) {
+                <div class="card-body">
+                    <div class="alert alert-info text-center">
+                        No hay archivos almacenados.
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
